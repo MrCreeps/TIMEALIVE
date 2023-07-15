@@ -4,7 +4,7 @@
 # You can then run the file (if you have Python installed of course)
 # PyGame is the only dependency for this (except Python... of course)
 
-TIMEALIVEVERSION = "0.1.2"
+TIMEALIVEVERSION = "0.2.0"
 
 import pygame
 import random
@@ -47,7 +47,7 @@ PLAYER_DEFAULT_COLOR = (255, 255, 255)
 PLAYER_HURT_COLOR = (153, 25, 0)
 PLAYER_MOVEMENT_SPEED = int(400 * SCALE_X)
 PLAYER_MOVEMENT_SPEED_INCREASE = int(2 * SCALE_X)
-PLAYER_INITIAL_LIVES = 3
+PLAYER_INITIAL_LIVES = 30
 MAX_INV_FRAMES = 120
 FONT = pygame.font.Font(None, int(36 * SCALE_X))
 TITLE_FONT = pygame.font.Font(None, int(72 * SCALE_X))
@@ -56,13 +56,13 @@ TIME_ALIVE_TEXT_POS = (int(10 * SCALE_X), int(50 * SCALE_Y))
 HIGHEST_TIME_TEXT_POS = (int(10 * SCALE_X), int(90 * SCALE_Y))
 SECOND = 1000
 LASER_INITIAL_SPEED = int(200 * SCALE_X)
-LASER_INITIAL_SPAWN_TIME = SECOND / 1.5
-LASER_MINIMUM_SPAWN_TIME = SECOND / 3
+LASER_INITIAL_SPAWN_TIME = SECOND / 2
+LASER_MINIMUM_SPAWN_TIME = SECOND / 5
 LASER_LENGTH = int(20 * SCALE_X)
 LASER_INITIAL_WIDTH = int(300 * SCALE_X)
 LASER_MINUM_WIDTH = int(15 * SCALE_X)
 LASER_SPEED_INCREASE = int(3 * SCALE_X)
-LASER_TIME_DECREASE = 10
+LASER_TIME_DECREASE = 5
 LASER_WIDTH_DECREASE = int(5 * SCALE_X)
 BUTTON_COLOR = (0, 200, 0)
 BUTTON_SIZE = (int(100 * SCALE_X), int(50 * SCALE_Y))
@@ -70,6 +70,14 @@ BUTTON_POSITION = (int((SCREEN_WIDTH / 2) - (BUTTON_SIZE[0] / 2)), int((SCREEN_H
 UPGRADE_BUTTON_1_COLOR = BUTTON_COLOR
 UPGRADE_BUTTON_1_SIZE = (int(200 * SCALE_X), int(50 * SCALE_Y))
 UPGRADE_BUTTON_1_POSITION = (int((SCREEN_WIDTH / 2) - (UPGRADE_BUTTON_1_SIZE[0] / 2)), int((SCREEN_HEIGHT / 2) + (UPGRADE_BUTTON_1_SIZE[1]) + (100 * SCALE_Y)))
+
+TOKEN_COLOR = (153, 153, 153)
+TOKEN_RADIUS = 10
+TOKEN_BACKGROUND_COLOR = (255, 255, 255)
+TOKEN_BACKGROUND_RADIUS = 15
+TOKEN_MAX_AMOUNT = 1  # Change this to above 0 to enable spawning
+TOKEN_MIN_WALL_DIST = 40
+TOKEN_INCREASE = 100 * SECOND
 
 import getpass
 username = getpass.getuser()
@@ -160,6 +168,28 @@ class LaserManager:
                 "dir": pygame.Vector2(0, -1),
                 "size": (self.laser_width, self.laser_length),
                 "color": self.laser_color})
+            
+class TokenManager:
+    def __init__(self, game_instance):
+        self.tokens = []
+        self.game_instance = game_instance
+    
+    def create_tokens(self):
+        if self.game_instance.game_progress % 30 < 1:
+            if len(self.tokens) < TOKEN_MAX_AMOUNT:
+                position = pygame.Vector2(random.randint(TOKEN_MIN_WALL_DIST, SCREEN_WIDTH), random.randint(TOKEN_MIN_WALL_DIST, SCREEN_HEIGHT))
+                self.tokens.append(position)
+
+    def render_tokens(self, screen, player):
+        for token in self.tokens:
+            pygame.draw.circle(screen, TOKEN_BACKGROUND_COLOR, token, TOKEN_BACKGROUND_RADIUS)
+            pygame.draw.circle(screen, TOKEN_COLOR, token, TOKEN_RADIUS)
+
+            distance = (player.position - pygame.Vector2(token)).length()
+
+            if distance < player.radius + TOKEN_RADIUS:
+                self.tokens.remove(token)
+                player.lives += 1
 
 class Game:
     def __init__(self):
@@ -228,12 +258,12 @@ class Game:
                 if self.sequence[-1] != "right":
                     self.sequence.append("right")
             if keys[pygame.K_a]:
-                if self.sequence[-1] != "a":
-                    self.sequence.append("a")
-            if keys[pygame.K_b]:
                 if self.sequence[-1] != "b":
                     self.sequence.append("b")
-            if self.sequence == ['up', 'down', 'left', 'right', 'left', 'right', 'a', 'b']:
+            if keys[pygame.K_b]:
+                if self.sequence[-1] != "a":
+                    self.sequence.append("a")
+            if self.sequence == ['up', 'down', 'left', 'right', 'left', 'right', 'b', 'a']:
                 PLAYER_DEFAULT_COLOR = (0, 0, 0)
                 BACKGROUND = (255, 255, 255)
             else:
@@ -325,6 +355,7 @@ class Game:
         running = True
         self.player = Player(self.screen)
         self.laser_manager = LaserManager()
+        self.token_manager = TokenManager(self)
         self.start_ticks = pygame.time.get_ticks()
         while running:
             self.dt = self.clock.tick(60) / SECOND
@@ -347,6 +378,8 @@ class Game:
                 self.laser_manager.update_lasers(self.game_progress)
                 self.laser_manager.spawn_lasers()
                 self.laser_manager.render_lasers(self.dt, self.screen, self.player)
+                self.token_manager.create_tokens()
+                self.token_manager.render_tokens(self.screen, self.player)
                 self.handle_input()
                 self.handle_player_inv()
                 self.display_hud()
