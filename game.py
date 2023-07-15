@@ -4,6 +4,8 @@
 # You can then run the file (if you have Python installed of course)
 # PyGame is the only dependency for this (except Python... of course)
 
+TIMEALIVEVERSION = "0.1"
+
 import pygame
 import random
 import os
@@ -250,6 +252,8 @@ class Game:
             self.screen.blit(title, title_rect)
             highest_time_text = FONT.render("Highest time: " + str(int(self.highest_time)) + "s", True, PLAYER_DEFAULT_COLOR)
             self.screen.blit(highest_time_text, LIVES_TEXT_POS)
+            version_text = FONT.render(f"Version: {TIMEALIVEVERSION}", True, PLAYER_DEFAULT_COLOR)
+            self.screen.blit(version_text, TIME_ALIVE_TEXT_POS)
 
             self.draw_button("Play", FONT)
             start = FONT.render("or press SPACE to play.", True, PLAYER_DEFAULT_COLOR)
