@@ -4,7 +4,7 @@
 # You can then run the file (if you have Python installed of course)
 # PyGame is the only dependency for this (except Python... of course)
 
-TIMEALIVEVERSION = "0.2.0"
+TIMEALIVEVERSION = "0.2.1"
 
 import pygame
 import random
@@ -175,7 +175,7 @@ class TokenManager:
         self.game_instance = game_instance
     
     def create_tokens(self):
-        if self.game_instance.game_progress % 30 < 1:
+        if self.game_instance.game_progress % 30 < 3:
             if len(self.tokens) < TOKEN_MAX_AMOUNT:
                 position = pygame.Vector2(random.randint(TOKEN_MIN_WALL_DIST, SCREEN_WIDTH), random.randint(TOKEN_MIN_WALL_DIST, SCREEN_HEIGHT))
                 self.tokens.append(position)
