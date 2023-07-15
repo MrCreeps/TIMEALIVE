@@ -4,7 +4,7 @@
 # You can then run the file (if you have Python installed of course)
 # PyGame is the only dependency for this (except Python... of course)
 
-TIMEALIVEVERSION = "0.1.1"
+TIMEALIVEVERSION = "0.1.2"
 
 import pygame
 import random
@@ -70,7 +70,12 @@ BUTTON_POSITION = (int((SCREEN_WIDTH / 2) - (BUTTON_SIZE[0] / 2)), int((SCREEN_H
 UPGRADE_BUTTON_1_COLOR = BUTTON_COLOR
 UPGRADE_BUTTON_1_SIZE = (int(200 * SCALE_X), int(50 * SCALE_Y))
 UPGRADE_BUTTON_1_POSITION = (int((SCREEN_WIDTH / 2) - (UPGRADE_BUTTON_1_SIZE[0] / 2)), int((SCREEN_HEIGHT / 2) + (UPGRADE_BUTTON_1_SIZE[1]) + (100 * SCALE_Y)))
-HIGHEST_TIME_FILE = "highest_time.txt"
+
+import getpass
+username = getpass.getuser()
+HIGHEST_TIME_FILE = f"C:/Users/{username}/.CarrierPigeonDevGames/TIMEALIVE/highest_time.txt"
+directory = os.path.dirname(HIGHEST_TIME_FILE)
+os.makedirs(directory, exist_ok=True)
 
 class Player:
     def __init__(self, screen):
