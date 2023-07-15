@@ -4,7 +4,7 @@
 # You can then run the file (if you have Python installed of course)
 # PyGame is the only dependency for this (except Python... of course)
 
-TIMEALIVEVERSION = "0.1"
+TIMEALIVEVERSION = "0.1.1"
 
 import pygame
 import random
@@ -70,19 +70,7 @@ BUTTON_POSITION = (int((SCREEN_WIDTH / 2) - (BUTTON_SIZE[0] / 2)), int((SCREEN_H
 UPGRADE_BUTTON_1_COLOR = BUTTON_COLOR
 UPGRADE_BUTTON_1_SIZE = (int(200 * SCALE_X), int(50 * SCALE_Y))
 UPGRADE_BUTTON_1_POSITION = (int((SCREEN_WIDTH / 2) - (UPGRADE_BUTTON_1_SIZE[0] / 2)), int((SCREEN_HEIGHT / 2) + (UPGRADE_BUTTON_1_SIZE[1]) + (100 * SCALE_Y)))
-
-import sys
-
-def resource_path(relative_path):
-    try:
-    # PyInstaller creates a temp folder and stores path in _MEIPASS
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-
-    return os.path.join(base_path, relative_path)
-
-HIGHEST_TIME_FILE = resource_path("highest_time.txt")
+HIGHEST_TIME_FILE = "highest_time.txt"
 
 class Player:
     def __init__(self, screen):
