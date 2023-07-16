@@ -4,7 +4,7 @@
 # You can then run the file (if you have Python installed of course)
 # PyGame is the only dependency for this (except Python... of course)
 
-TIMEALIVEVERSION = "0.3.1"
+TIMEALIVEVERSION = "0.4.0"
 
 import pygame
 import random
@@ -46,7 +46,7 @@ PLAYER_RADIUS = int(20 * SCALE_X)
 PLAYER_DEFAULT_COLOR = (255, 255, 255)
 PLAYER_HURT_COLOR = (153, 25, 0)
 PLAYER_MOVEMENT_SPEED = int(400 * SCALE_X)
-PLAYER_MOVEMENT_SPEED_INCREASE = int(2 * SCALE_X)
+PLAYER_MOVEMENT_SPEED_INCREASE = int(5 * SCALE_X)
 PLAYER_INITIAL_LIVES = 3
 MAX_INV_FRAMES = 120
 FONT = pygame.font.Font(None, int(36 * SCALE_X))
@@ -57,13 +57,13 @@ HIGHEST_TIME_TEXT_POS = (int(10 * SCALE_X), int(90 * SCALE_Y))
 SECOND = 1000
 LASER_INITIAL_SPEED = int(200 * SCALE_X)
 LASER_INITIAL_SPAWN_TIME = SECOND / 2
-LASER_MINIMUM_SPAWN_TIME = SECOND / 5
+LASER_MINIMUM_SPAWN_TIME = SECOND / 10
 LASER_LENGTH = int(20 * SCALE_X)
 LASER_INITIAL_WIDTH = int(300 * SCALE_X)
-LASER_MINUM_WIDTH = int(15 * SCALE_X)
-LASER_SPEED_INCREASE = int(3 * SCALE_X)
+LASER_MINUM_WIDTH = int(50 * SCALE_X)
+LASER_SPEED_INCREASE = int(4.5 * SCALE_X)
 LASER_TIME_DECREASE = 5
-LASER_WIDTH_DECREASE = int(5 * SCALE_X)
+LASER_WIDTH_DECREASE = int(1.5 * SCALE_X)
 BUTTON_COLOR = (0, 200, 0)
 BUTTON_SIZE = (int(100 * SCALE_X), int(50 * SCALE_Y))
 BUTTON_POSITION = (int((SCREEN_WIDTH / 2) - (BUTTON_SIZE[0] / 2)), int((SCREEN_HEIGHT / 2) + (BUTTON_SIZE[1]) - (100 * SCALE_Y)))
@@ -79,6 +79,8 @@ TOKEN_MAX_AMOUNT = 1  # Change this to above 0 to enable spawning
 TOKEN_MIN_WALL_DIST = 40
 TOKEN_INCREASE = 100 * SECOND
 
+OPTIONS_MENU_BUTTON_POSITION = (int((SCREEN_WIDTH / 2) - (BUTTON_SIZE[0] / 2)), int((SCREEN_HEIGHT / 2) + (BUTTON_SIZE[1]) - (-100 * SCALE_Y)))
+
 import getpass
 username = getpass.getuser()
 HIGHEST_TIME_FILE = f"C:/Users/{username}/.CarrierPigeonDevGames/TIMEALIVE/highest_time.txt"
@@ -88,10 +90,11 @@ os.makedirs(directory, exist_ok=True)
 
 import requests
 music_url = "https://github.com/MrCreeps/TIMEALIVE/raw/main/timealive_game.mp3"
-music_data = requests.get(music_url)
-if music_data.status_code == 200:
-    with open(GAME_MUSIC_PATH, "wb") as file:
-        file.write(music_data.content)
+if not os.path.exists(music_url):
+    music_data = requests.get(music_url)
+    if music_data.status_code == 200:
+        with open(GAME_MUSIC_PATH, "wb") as file:
+            file.write(music_data.content)
 
 class Player:
     def __init__(self, screen):
@@ -123,7 +126,7 @@ class LaserManager:
     def update_lasers(self, game_progress):
         self.laser_speed = LASER_INITIAL_SPEED + game_progress * LASER_SPEED_INCREASE  # increases by X pixel/s every second
         self.spawn_time = max(LASER_MINIMUM_SPAWN_TIME, SECOND - game_progress * LASER_TIME_DECREASE)  # decreases by X ms every second, can't go lower than Y ms
-        self.laser_width = max(LASER_MINUM_WIDTH, LASER_INITIAL_WIDTH - LASER_WIDTH_DECREASE * LASER_WIDTH_DECREASE) # decreases by X pixels evey second, can't go lower than Y
+        self.laser_width = max(LASER_MINUM_WIDTH, LASER_INITIAL_WIDTH - game_progress * LASER_WIDTH_DECREASE) # decreases by X pixels evey second, can't go lower than Y
 
         hue = (game_progress * 2) % 360
         self.laser_color = pygame.Color(0)
@@ -225,6 +228,7 @@ class Game:
     def titlescreen(self):
         self.title_laser_manager = LaserManager()
         synthetic_gameprogress = random.randint(0, 200)  # random number bc it is large enough to cover full spectrum (180) while not being too large
+        synthetic_gameprogress = 100
         self.title_laser_manager.laser_speed = LASER_INITIAL_SPEED + synthetic_gameprogress * LASER_SPEED_INCREASE
         self.title_laser_manager.spawn_time = max(LASER_MINIMUM_SPAWN_TIME, SECOND - synthetic_gameprogress * LASER_TIME_DECREASE)
         self.title_laser_manager.laser_width = max(LASER_MINUM_WIDTH, LASER_INITIAL_WIDTH - synthetic_gameprogress * LASER_WIDTH_DECREASE)
@@ -288,17 +292,17 @@ class Game:
 
             self.draw_button("Play", FONT)
             start = FONT.render("or press SPACE to play.", True, PLAYER_DEFAULT_COLOR)
-            self.screen.blit(start, start.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 75)))
+            self.screen.blit(start, start.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + (75*SCALE_Y))))
 
             controls = FONT.render(f"Use WASD, Arrow Keys, or Joy Stick to move.", True, PLAYER_DEFAULT_COLOR)
-            self.screen.blit(controls, controls.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 300)))
+            self.screen.blit(controls, controls.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + (300*SCALE_Y))))
             
             temptext = FONT.render(f"You have {PLAYER_INITIAL_LIVES} lives and {MAX_INV_FRAMES} frames of invincibility when hit.", True, PLAYER_DEFAULT_COLOR)
-            self.screen.blit(temptext, temptext.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 330)))
+            self.screen.blit(temptext, temptext.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + (330*SCALE_Y))))
             temptext = FONT.render("Avoid the walls :)", True, PLAYER_DEFAULT_COLOR)
-            self.screen.blit(temptext, temptext.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 360)))
+            self.screen.blit(temptext, temptext.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + (360*SCALE_Y))))
             temptext = FONT.render(f"(The game runs at 60 FPS (locked with deltatime), {SECOND} TPS, and {SCREEN_WIDTH}x{SCREEN_HEIGHT} Resolution.)", True, PLAYER_DEFAULT_COLOR)
-            self.screen.blit(temptext, temptext.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 30)))
+            self.screen.blit(temptext, temptext.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT - (30*SCALE_Y))))
 
             pygame.display.flip()
 
