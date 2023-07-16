@@ -4,7 +4,7 @@
 # You can then run the file (if you have Python installed of course)
 # PyGame is the only dependency for this (except Python... of course)
 
-TIMEALIVEVERSION = "0.4.0"
+TIMEALIVEVERSION = "0.4.1"
 
 import pygame
 import random
@@ -111,7 +111,8 @@ class Player:
 
     def draw_player(self, screen, game_progress):
         pygame.draw.circle(screen, self.color, (int(self.position.x), int(self.position.y)), self.radius)
-        self.move_speed = PLAYER_MOVEMENT_SPEED + game_progress * PLAYER_MOVEMENT_SPEED_INCREASE
+        if game_progress < 201:
+            self.move_speed = PLAYER_MOVEMENT_SPEED + game_progress * PLAYER_MOVEMENT_SPEED_INCREASE
 
 class LaserManager:
     def __init__(self):
@@ -124,7 +125,8 @@ class LaserManager:
         self.laser_color = pygame.Color(0)
 
     def update_lasers(self, game_progress):
-        self.laser_speed = LASER_INITIAL_SPEED + game_progress * LASER_SPEED_INCREASE  # increases by X pixel/s every second
+        if game_progress < 201:
+            self.laser_speed = LASER_INITIAL_SPEED + game_progress * LASER_SPEED_INCREASE  # increases by X pixel/s every second
         self.spawn_time = max(LASER_MINIMUM_SPAWN_TIME, SECOND - game_progress * LASER_TIME_DECREASE)  # decreases by X ms every second, can't go lower than Y ms
         self.laser_width = max(LASER_MINUM_WIDTH, LASER_INITIAL_WIDTH - game_progress * LASER_WIDTH_DECREASE) # decreases by X pixels evey second, can't go lower than Y
 
