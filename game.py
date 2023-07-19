@@ -4,7 +4,7 @@
 # You can then run the file (if you have Python installed of course)
 # PyGame is the only dependency for this (except Python... of course)
 
-TIMEALIVEVERSION = "0.4.1"
+TIMEALIVEVERSION = "0.4.2"
 
 import pygame
 import random
@@ -95,6 +95,8 @@ if not os.path.exists(music_url):
     if music_data.status_code == 200:
         with open(GAME_MUSIC_PATH, "wb") as file:
             file.write(music_data.content)
+else:
+    print("Music already exits.")
 
 class Player:
     def __init__(self, screen):
@@ -230,7 +232,6 @@ class Game:
     def titlescreen(self):
         self.title_laser_manager = LaserManager()
         synthetic_gameprogress = random.randint(0, 200)  # random number bc it is large enough to cover full spectrum (180) while not being too large
-        synthetic_gameprogress = 100
         self.title_laser_manager.laser_speed = LASER_INITIAL_SPEED + synthetic_gameprogress * LASER_SPEED_INCREASE
         self.title_laser_manager.spawn_time = max(LASER_MINIMUM_SPAWN_TIME, SECOND - synthetic_gameprogress * LASER_TIME_DECREASE)
         self.title_laser_manager.laser_width = max(LASER_MINUM_WIDTH, LASER_INITIAL_WIDTH - synthetic_gameprogress * LASER_WIDTH_DECREASE)
