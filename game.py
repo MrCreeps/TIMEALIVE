@@ -4,7 +4,7 @@
 # You can then run the file (if you have Python installed of course)
 # PyGame is the only dependency for this (except Python... of course)
 
-TIMEALIVEVERSION = "0.4.2-a"
+TIMEALIVEVERSION = "0.4.2-b"
 
 import pygame
 import random
@@ -42,7 +42,7 @@ SCALE_Y = ACTUAL_HEIGHT / ORIGINAL_HEIGHT
 SCREEN_WIDTH = ACTUAL_WIDTH
 SCREEN_HEIGHT = ACTUAL_HEIGHT
 BACKGROUND = (0, 0, 0)
-PLAYER_RADIUS = int(500 * SCALE_X)
+PLAYER_RADIUS = int(20 * SCALE_X)
 PLAYER_DEFAULT_COLOR = (255, 255, 255)
 PLAYER_HURT_COLOR = (153, 25, 0)
 PLAYER_MOVEMENT_SPEED = int(400 * SCALE_X)
